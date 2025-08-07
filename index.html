@@ -2,18 +2,18 @@
 <html lang="pt-br">
 <head>
   <meta charset="UTF-8">
-  <title>Jogo da Velha com Estilo</title>
+  <title>Jogo da Velha contra o Robô</title>
   <style>
     body {
       font-family: 'Segoe UI', sans-serif;
       text-align: center;
-      background: linear-gradient(to right, #ffb6c1, #ffe4e1);
+      background: linear-gradient(to right, #e0f7fa, #e1bee7);
       padding: 30px;
       color: #333;
     }
     h1 {
       font-size: 2.5em;
-      color: #c71585;
+      color: #6a1b9a;
     }
     .inputs {
       margin-bottom: 20px;
@@ -34,11 +34,11 @@
     .cell {
       width: 100px;
       height: 100px;
-      background-color: #fff0f5;
-      border: 2px solid #db7093;
+      background-color: #f3e5f5;
+      border: 2px solid #7b1fa2;
       font-size: 2.5em;
       font-weight: bold;
-      color: #8b008b;
+      color: #4a148c;
       display: flex;
       justify-content: center;
       align-items: center;
@@ -47,7 +47,7 @@
       transition: background-color 0.3s;
     }
     .cell:hover {
-      background-color: #ffcce5;
+      background-color: #d1c4e9;
     }
     #status {
       font-size: 1.4em;
@@ -57,7 +57,7 @@
       padding: 10px 20px;
       font-size: 1em;
       margin-top: 20px;
-      background-color: #c71585;
+      background-color: #6a1b9a;
       color: white;
       border: none;
       border-radius: 12px;
@@ -65,17 +65,16 @@
       transition: background-color 0.3s;
     }
     button:hover {
-      background-color: #8b008b;
+      background-color: #4a148c;
     }
   </style>
 </head>
 <body>
 
-  <h1>🎮 Jogo da Velha Estilizado 🏆</h1>
+  <h1>🤖 Jogo da Velha vs Robô</h1>
 
   <div class="inputs">
-    <input type="text" id="playerX" placeholder="Nome do Jogador X">
-    <input type="text" id="playerO" placeholder="Nome do Jogador O">
+    <input type="text" id="playerX" placeholder="Seu nome">
     <button onclick="startGame()">Começar Jogo</button>
   </div>
 
@@ -89,17 +88,15 @@
     let cells = ['', '', '', '', '', '', '', '', ''];
     const board = document.getElementById('board');
     const statusDiv = document.getElementById('status');
-    let playerXName = '';
-    let playerOName = '';
+    let playerName = '';
 
     function startGame() {
-      playerXName = document.getElementById('playerX').value || 'Jogador X';
-      playerOName = document.getElementById('playerO').value || 'Jogador O';
+      playerName = document.getElementById('playerX').value || 'Jogador';
       currentPlayer = 'X';
       gameActive = true;
       cells = ['', '', '', '', '', '', '', '', ''];
       createBoard();
-      statusDiv.textContent = `É a vez de ${playerXName} (X)`;
+      statusDiv.textContent = `Sua vez, ${playerName} (X)`;
     }
 
     function createBoard() {
@@ -116,30 +113,60 @@
 
     function handleCellClick(e) {
       const index = e.target.dataset.index;
-      if (!gameActive || cells[index] !== '') return;
+      if (!gameActive || cells[index] !== '' || currentPlayer !== 'X') return;
 
-      cells[index] = currentPlayer;
-      e.target.textContent = currentPlayer;
+      makeMove(index, 'X');
 
-      if (checkWinner()) {
-        const winnerName = currentPlayer === 'X' ? playerXName : playerOName;
-        statusDiv.innerHTML = `🏆 <strong>${winnerName}</strong> venceu o jogo!`;
+      if (checkWinner('X')) {
+        statusDiv.innerHTML = `🏆 ${playerName} venceu!`;
         gameActive = false;
         return;
       }
 
       if (!cells.includes('')) {
-        statusDiv.innerHTML = '🤝 Empate! Que jogão!';
+        statusDiv.innerHTML = '🤝 Empate!';
         gameActive = false;
         return;
       }
 
-      currentPlayer = currentPlayer === 'X' ? 'O' : 'X';
-      const nextPlayerName = currentPlayer === 'X' ? playerXName : playerOName;
-      statusDiv.textContent = `É a vez de ${nextPlayerName} (${currentPlayer})`;
+      currentPlayer = 'O';
+      statusDiv.textContent = 'Vez do Robô...';
+
+      setTimeout(robotMove, 600); // Espera 0.6s pra parecer mais real
     }
 
-    function checkWinner() {
+    function makeMove(index, player) {
+      cells[index] = player;
+      const cellDiv = document.querySelector(`[data-index='${index}']`);
+      if (cellDiv) cellDiv.textContent = player;
+    }
+
+    function robotMove() {
+      if (!gameActive) return;
+
+      // Escolhe uma célula vazia aleatória
+      const emptyIndexes = cells.map((val, idx) => val === '' ? idx : null).filter(idx => idx !== null);
+      const randomIndex = emptyIndexes[Math.floor(Math.random() * emptyIndexes.length)];
+
+      makeMove(randomIndex, 'O');
+
+      if (checkWinner('O')) {
+        statusDiv.innerHTML = '💻 Robô venceu! Tente de novo!';
+        gameActive = false;
+        return;
+      }
+
+      if (!cells.includes('')) {
+        statusDiv.innerHTML = '🤝 Empate!';
+        gameActive = false;
+        return;
+      }
+
+      currentPlayer = 'X';
+      statusDiv.textContent = `Sua vez, ${playerName} (X)`;
+    }
+
+    function checkWinner(player) {
       const winPatterns = [
         [0,1,2], [3,4,5], [6,7,8], 
         [0,3,6], [1,4,7], [2,5,8],
@@ -147,7 +174,7 @@
       ];
       return winPatterns.some(pattern => {
         const [a, b, c] = pattern;
-        return cells[a] && cells[a] === cells[b] && cells[a] === cells[c];
+        return cells[a] === player && cells[b] === player && cells[c] === player;
       });
     }
 
@@ -158,3 +185,205 @@
 
 </body>
 </html>
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <title>Jogo da Velha vs Robô + Prêmios</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      text-align: center;
+      background: linear-gradient(to right, #e0f7fa, #f8bbd0);
+      padding: 30px;
+      color: #333;
+    }
+    h1 {
+      font-size: 2.5em;
+      color: #880e4f;
+    }
+    .inputs {
+      margin-bottom: 20px;
+    }
+    input {
+      padding: 8px;
+      margin: 5px;
+      border: 1px solid #ccc;
+      border-radius: 10px;
+    }
+    .board {
+      display: grid;
+      grid-template-columns: repeat(3, 100px);
+      gap: 10px;
+      justify-content: center;
+      margin: 20px auto;
+    }
+    .cell {
+      width: 100px;
+      height: 100px;
+      background-color: #fce4ec;
+      border: 2px solid #ad1457;
+      font-size: 2.5em;
+      font-weight: bold;
+      color: #880e4f;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      cursor: pointer;
+      border-radius: 15px;
+      transition: background-color 0.3s;
+    }
+    .cell:hover {
+      background-color: #f8bbd0;
+    }
+    #status {
+      font-size: 1.4em;
+      margin-top: 20px;
+    }
+    button {
+      padding: 10px 20px;
+      font-size: 1em;
+      margin-top: 20px;
+      background-color: #ad1457;
+      color: white;
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+    button:hover {
+      background-color: #880e4f;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>🎮 Jogo da Velha vs Robô 🤖</h1>
+
+  <div class="inputs">
+    <input type="text" id="playerX" placeholder="Seu nome">
+    <button onclick="startGame()">Começar Jogo</button>
+  </div>
+
+  <div class="board" id="board"></div>
+  <div id="status"></div>
+  <button onclick="resetGame()">Reiniciar Jogo</button>
+
+  <script>
+    let currentPlayer = 'X';
+    let gameActive = false;
+    let cells = ['', '', '', '', '', '', '', '', ''];
+    const board = document.getElementById('board');
+    const statusDiv = document.getElementById('status');
+    let playerName = '';
+
+    const premiacoes = [
+      '🍫 Você ganhou um chocolate virtual!',
+      '🎟 Um ingresso imaginário pro cinema!',
+      '🏖 Um final de semana fictício na praia!',
+      '🧸 Um abraço quentinho!',
+      '💤 Um cochilo premiado!',
+      '🎉 Parabéns, rainha da rodada!',
+      '📱 5 minutos extras no celular (mentira rs)',
+      '🍕 Uma pizza imaginária só pra você!',
+      '🎮 Um jogo grátis (só no mundo dos sonhos)',
+      '🧁 Um cupcake mágico do universo!'
+    ];
+
+    function startGame() {
+      playerName = document.getElementById('playerX').value || 'Jogador';
+      currentPlayer = 'X';
+      gameActive = true;
+      cells = ['', '', '', '', '', '', '', '', ''];
+      createBoard();
+      statusDiv.textContent = `Sua vez, ${playerName} (X)`;
+    }
+
+    function createBoard() {
+      board.innerHTML = '';
+      cells.forEach((cell, index) => {
+        const cellDiv = document.createElement('div');
+        cellDiv.classList.add('cell');
+        cellDiv.dataset.index = index;
+        cellDiv.textContent = cell;
+        cellDiv.addEventListener('click', handleCellClick);
+        board.appendChild(cellDiv);
+      });
+    }
+
+    function handleCellClick(e) {
+      const index = e.target.dataset.index;
+      if (!gameActive || cells[index] !== '' || currentPlayer !== 'X') return;
+
+      makeMove(index, 'X');
+
+      if (checkWinner('X')) {
+        const premio = premiacoes[Math.floor(Math.random() * premiacoes.length)];
+        statusDiv.innerHTML = `🏆 ${playerName} venceu!<br>${premio}`;
+        gameActive = false;
+        return;
+      }
+
+      if (!cells.includes('')) {
+        statusDiv.innerHTML = '🤝 Empate!';
+        gameActive = false;
+        return;
+      }
+
+      currentPlayer = 'O';
+      statusDiv.textContent = 'Vez do Robô...';
+
+      setTimeout(robotMove, 600);
+    }
+
+    function makeMove(index, player) {
+      cells[index] = player;
+      const cellDiv = document.querySelector(`[data-index='${index}']`);
+      if (cellDiv) cellDiv.textContent = player;
+    }
+
+    function robotMove() {
+      if (!gameActive) return;
+
+      const emptyIndexes = cells.map((val, idx) => val === '' ? idx : null).filter(idx => idx !== null);
+      const randomIndex = emptyIndexes[Math.floor(Math.random() * emptyIndexes.length)];
+
+      makeMove(randomIndex, 'O');
+
+      if (checkWinner('O')) {
+        statusDiv.innerHTML = '💻 O Robô venceu! Tente novamente!';
+        gameActive = false;
+        return;
+      }
+
+      if (!cells.includes('')) {
+        statusDiv.innerHTML = '🤝 Empate!';
+        gameActive = false;
+        return;
+      }
+
+      currentPlayer = 'X';
+      statusDiv.textContent = `Sua vez, ${playerName} (X)`;
+    }
+
+    function checkWinner(player) {
+      const winPatterns = [
+        [0,1,2], [3,4,5], [6,7,8],
+        [0,3,6], [1,4,7], [2,5,8],
+        [0,4,8], [2,4,6]
+      ];
+      return winPatterns.some(pattern => {
+        const [a, b, c] = pattern;
+        return cells[a] === player && cells[b] === player && cells[c] === player;
+      });
+    }
+
+    function resetGame() {
+      startGame();
+    }
+  </script>
+
+</body>
+</html>
+
+
