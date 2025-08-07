@@ -2,64 +2,105 @@
 <html lang="pt-br">
 <head>
   <meta charset="UTF-8">
-  <title>Jogo da Velha</title>
+  <title>Jogo da Velha com Estilo</title>
   <style>
     body {
-      font-family: Arial, sans-serif;
+      font-family: 'Segoe UI', sans-serif;
       text-align: center;
-      background-color: #f0f0f0;
+      background: linear-gradient(to right, #ffb6c1, #ffe4e1);
       padding: 30px;
+      color: #333;
     }
     h1 {
-      color: #333;
+      font-size: 2.5em;
+      color: #c71585;
+    }
+    .inputs {
+      margin-bottom: 20px;
+    }
+    input {
+      padding: 8px;
+      margin: 5px;
+      border: 1px solid #ccc;
+      border-radius: 10px;
     }
     .board {
       display: grid;
       grid-template-columns: repeat(3, 100px);
-      grid-gap: 5px;
+      gap: 10px;
+      justify-content: center;
       margin: 20px auto;
-      width: max-content;
     }
     .cell {
       width: 100px;
       height: 100px;
-      background-color: white;
-      font-size: 2em;
+      background-color: #fff0f5;
+      border: 2px solid #db7093;
+      font-size: 2.5em;
+      font-weight: bold;
+      color: #8b008b;
       display: flex;
       justify-content: center;
       align-items: center;
       cursor: pointer;
-      border: 2px solid #888;
-      transition: background-color 0.2s;
+      border-radius: 15px;
+      transition: background-color 0.3s;
     }
     .cell:hover {
-      background-color: #e2e2e2;
+      background-color: #ffcce5;
     }
     #status {
+      font-size: 1.4em;
       margin-top: 20px;
-      font-size: 1.2em;
     }
     button {
-      margin-top: 15px;
       padding: 10px 20px;
       font-size: 1em;
+      margin-top: 20px;
+      background-color: #c71585;
+      color: white;
+      border: none;
+      border-radius: 12px;
       cursor: pointer;
+      transition: background-color 0.3s;
+    }
+    button:hover {
+      background-color: #8b008b;
     }
   </style>
 </head>
 <body>
 
-  <h1>Jogo da Velha</h1>
+  <h1>🎮 Jogo da Velha Estilizado 🏆</h1>
+
+  <div class="inputs">
+    <input type="text" id="playerX" placeholder="Nome do Jogador X">
+    <input type="text" id="playerO" placeholder="Nome do Jogador O">
+    <button onclick="startGame()">Começar Jogo</button>
+  </div>
+
   <div class="board" id="board"></div>
-  <div id="status">Vez do jogador: X</div>
+  <div id="status"></div>
   <button onclick="resetGame()">Reiniciar Jogo</button>
 
   <script>
+    let currentPlayer = 'X';
+    let gameActive = false;
+    let cells = ['', '', '', '', '', '', '', '', ''];
     const board = document.getElementById('board');
     const statusDiv = document.getElementById('status');
-    let currentPlayer = 'X';
-    let gameActive = true;
-    let cells = ['', '', '', '', '', '', '', '', ''];
+    let playerXName = '';
+    let playerOName = '';
+
+    function startGame() {
+      playerXName = document.getElementById('playerX').value || 'Jogador X';
+      playerOName = document.getElementById('playerO').value || 'Jogador O';
+      currentPlayer = 'X';
+      gameActive = true;
+      cells = ['', '', '', '', '', '', '', '', ''];
+      createBoard();
+      statusDiv.textContent = `É a vez de ${playerXName} (X)`;
+    }
 
     function createBoard() {
       board.innerHTML = '';
@@ -75,33 +116,34 @@
 
     function handleCellClick(e) {
       const index = e.target.dataset.index;
-
-      if (cells[index] !== '' || !gameActive) return;
+      if (!gameActive || cells[index] !== '') return;
 
       cells[index] = currentPlayer;
       e.target.textContent = currentPlayer;
 
       if (checkWinner()) {
-        statusDiv.textContent = `Jogador ${currentPlayer} venceu!`;
+        const winnerName = currentPlayer === 'X' ? playerXName : playerOName;
+        statusDiv.innerHTML = `🏆 <strong>${winnerName}</strong> venceu o jogo!`;
         gameActive = false;
         return;
       }
 
       if (!cells.includes('')) {
-        statusDiv.textContent = 'Empate!';
+        statusDiv.innerHTML = '🤝 Empate! Que jogão!';
         gameActive = false;
         return;
       }
 
       currentPlayer = currentPlayer === 'X' ? 'O' : 'X';
-      statusDiv.textContent = `Vez do jogador: ${currentPlayer}`;
+      const nextPlayerName = currentPlayer === 'X' ? playerXName : playerOName;
+      statusDiv.textContent = `É a vez de ${nextPlayerName} (${currentPlayer})`;
     }
 
     function checkWinner() {
       const winPatterns = [
-        [0,1,2], [3,4,5], [6,7,8], // linhas
-        [0,3,6], [1,4,7], [2,5,8], // colunas
-        [0,4,8], [2,4,6]           // diagonais
+        [0,1,2], [3,4,5], [6,7,8], 
+        [0,3,6], [1,4,7], [2,5,8],
+        [0,4,8], [2,4,6]
       ];
       return winPatterns.some(pattern => {
         const [a, b, c] = pattern;
@@ -110,15 +152,8 @@
     }
 
     function resetGame() {
-      cells = ['', '', '', '', '', '', '', '', ''];
-      currentPlayer = 'X';
-      gameActive = true;
-      statusDiv.textContent = 'Vez do jogador: X';
-      createBoard();
+      startGame();
     }
-
-    // Inicializar
-    createBoard();
   </script>
 
 </body>
