@@ -115,17 +115,17 @@
     const winSound = document.getElementById('winSound');
     const drawSound = document.getElementById('drawSound');
 
-    const premiacoes = [
+    const premiacoes = {
       '🍫 Chocolate virtual!',
-      '🎟 Ingresso mágico pro cinema!',
-      '🏝 Viagem fictícia pra praia!',
-      '🧸 Abraço quentinho!',
+      '🎟 Ingresso magico pro cinema!',
+      '🏝 Viagem ficticia pra praia!',
+      '🧸 Abraco quentinho!',
       '💤 Cochilo premiado!',
-      '🍕 Pizza imaginária!',
-      '📱 5 min extras no celular!',
-      '🧁 Cupcake mágico!',
-      '🎉 Campeã da rodada!',
-    ];
+      '🍕 Pizza imaginaria!',
+      '📱 5 min extras no celular!'
+      '🧁 Cupcake magico!'
+      '🎉 Campea da rodada!'
+    };
 
     function startGame() {
       gameMode = document.getElementById('gameMode').value;
@@ -175,7 +175,7 @@
       } else {
         currentPlayer = currentPlayer === 'X' ? 'O' : 'X';
         const name = currentPlayer === 'X' ? playerXName : playerOName;
-        updateStatus(`É a vez de ${name} (${currentPlayer})`);
+        updateStatus(`E a vez de ${name} (${currentPlayer})`);
       }
     }
 
@@ -188,7 +188,7 @@
     function robotMove() {
       if (!gameActive) return;
 
-      // Lógica simples: vencer > bloquear > aleatório
+      // Lógica simples: vencer > bloquear > aleatOrio
       let index = findWinningMove('O') || findWinningMove('X') || pickRandomMove();
       makeMove(index, 'O');
 
