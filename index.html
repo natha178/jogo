@@ -1,270 +1,32 @@
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
-  <meta charset="UTF-8">
-  <title>Jogo da Velha Top</title>
-  <style>
-    body {
-      font-family: 'Segoe UI', sans-serif;
-      text-align: center;
-      background: linear-gradient(to right, #e1bee7, #ffe0b2);
-      padding: 30px;
-      color: #333;
-    }
-    h1 {
-      font-size: 2.5em;
-      color: #6a1b9a;
-    }
-    .inputs {
-      margin-bottom: 20px;
-    }
-    input, select {
-      padding: 8px;
-      margin: 5px;
-      border: 1px solid #ccc;
-      border-radius: 10px;
-    }
-    .board {
-      display: grid;
-      grid-template-columns: repeat(3, 100px);
-      gap: 10px;
-      justify-content: center;
-      margin: 20px auto;
-    }
-    .cell {
-      width: 100px;
-      height: 100px;
-      background-color: #f3e5f5;
-      border: 2px solid #7b1fa2;
-      font-size: 2.5em;
-      font-weight: bold;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      cursor: pointer;
-      border-radius: 15px;
-      transition: background-color 0.3s;
-    }
-    .cell:hover {
-      background-color: #f8bbd0;
-    }
-    #status {
-      font-size: 1.3em;
-      margin-top: 20px;
-    }
-    .scoreboard {
-      font-size: 1.2em;
-      margin-top: 10px;
-    }
-    button {
-      padding: 10px 20px;
-      font-size: 1em;
-      margin-top: 20px;
-      background-color: #6a1b9a;
-      color: white;
-      border: none;
-      border-radius: 12px;
-      cursor: pointer;
-      transition: background-color 0.3s;
-    }
-    button:hover {
-      background-color: #4a148c;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jogo da Velha Colorido</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-
-  <h1>🎮 Jogo da Velha Deluxe</h1>
-
-  <div class="inputs">
-    <select id="gameMode">
-      <option value="robot">Jogar contra o Robô 🤖</option>
-      <option value="2players">Jogar com outra Pessoa 👥</option>
-    </select><br>
-    <input type="text" id="playerX" placeholder="Nome do Jogador X">
-    <input type="text" id="playerO" placeholder="Nome do Jogador O (ou Robô)">
-    <button onclick="startGame()">Comecar Jogo</button>
-  </div>
-
-  <div class="scoreboard">
-    <span id="scoreX">X: 0</span> | 
-    <span id="scoreO">O: 0</span>
-  </div>
-
-  <div class="board" id="board"></div>
-  <div id="status"></div>
-  <button onclick="resetGame()">🔁 Reiniciar Jogo</button>
-
-  <audio id="clickSound" src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_eabbc1f208.mp3?filename=click-124467.mp3"></audio>
-  <audio id="winSound" src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_3f7bd2d1d2.mp3?filename=success-1-6297.mp3"></audio>
-  <audio id="drawSound" src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_0a017447f8.mp3?filename=fail-144746.mp3"></audio>
-
-  <script>
-    let currentPlayer = 'X';
-    let gameActive = false;
-    let cells = ['', '', '', '', '', '', '', '', ''];
-    let gameMode = 'robot';
-    let playerXName = '', playerOName = '';
-    let score = { X: 0, O: 0 };
-
-    const board = document.getElementById('board');
-    const statusDiv = document.getElementById('status');
-    const scoreX = document.getElementById('scoreX');
-    const scoreO = document.getElementById('scoreO');
-    const clickSound = document.getElementById('clickSound');
-    const winSound = document.getElementById('winSound');
-    const drawSound = document.getElementById('drawSound');
-
-    const premiacoes = {
-      '🍫 Chocolate virtual!'
-      '🎟 Ingresso magico pro cinemaa
-      '🏝 Viagem ficticia pra praia!'
-      '🧸 Abraco quentinho!'
-      '💤 Cochilo premiado!'
-      '🍕 Pizza imaginaria!'
-      '📱 5 min extras no celular!'
-      '🧁 Cupcake magico!'
-      '🎉 Campea da rodada!'
-    };
-
-    function startGame() {
-      gameMode = document.getElementById('gameMode').value;
-      playerXName = document.getElementById('playerX').value || 'Jogador X';
-      playerOName = document.getElementById('playerO').value || (gameMode === 'robot' ? 'Robô' : 'Jogador O');
-      currentPlayer = 'X';
-      gameActive = true;
-      cells = ['', '', '', '', '', '', '', '', ''];
-      createBoard();
-      updateStatus(`É a vez de ${playerXName} (X)`);
-    }
-
-    function createBoard() {
-      board.innerHTML = '';
-      cells.forEach((cell, index) => {
-        const cellDiv = document.createElement('div');
-        cellDiv.classList.add('cell');
-        cellDiv.dataset.index = index;
-        cellDiv.textContent = cell;
-        cellDiv.addEventListener('click', handleCellClick);
-        board.appendChild(cellDiv);
-      });
-    }
-
-    function handleCellClick(e) {
-      const index = e.target.dataset.index;
-      if (!gameActive || cells[index] !== '') return;
-
-      makeMove(index, currentPlayer);
-
-      if (checkWinner(currentPlayer)) {
-        endGame(currentPlayer);
-        return;
-      }
-
-      if (!cells.includes('')) {
-        updateStatus('🤝 Deu empate!');
-        drawSound.play();
-        gameActive = false;
-        return;
-      }
-
-      if (gameMode === 'robot' && currentPlayer === 'X') {
-        currentPlayer = 'O';
-        updateStatus(`🤖 Robô pensando...`);
-        setTimeout(robotMove, 500);
-      } else {
-        currentPlayer = currentPlayer === 'X' ? 'O' : 'X';
-        const name = currentPlayer === 'X' ? playerXName : playerOName;
-        updateStatus(`E a vez de ${name} (${currentPlayer})`);
-      }
-    }
-
-    function makeMove(index, player) {
-      cells[index] = player;
-      document.querySelector(`[data-index='${index}']`).textContent = player;
-      clickSound.play();
-    }
-
-    function robotMove() {
-      if (!gameActive) return;
-
-      // Lógica simples: vencer > bloquear > aleatOrio
-      let index = findWinningMove('O') || findWinningMove('X') || pickRandomMove();
-      makeMove(index, 'O');
-
-      if (checkWinner('O')) {
-        endGame('O');
-        return;
-      }
-
-      if (!cells.includes('')) {
-        updateStatus('🤝 Deu empate!');
-        drawSound.play();
-        gameActive = false;
-        return;
-      }
-
-      currentPlayer = 'X';
-      updateStatus(`Sua vez, ${playerXName} (X)`);
-    }
-
-    function findWinningMove(player) {
-      const winPatterns = [
-        [0,1,2],[3,4,5],[6,7,8],
-        [0,3,6],[1,4,7],[2,5,8],
-        [0,4,8],[2,4,6]
-      ];
-      for (let pattern of winPatterns) {
-        const [a, b, c] = pattern;
-        const values = [cells[a], cells[b], cells[c]];
-        const counts = values.filter(v => v === player).length;
-        const empty = pattern.find(i => cells[i] === '');
-        if (counts === 2 && empty !== undefined) return empty;
-      }
-      return null;
-    }
-
-    function pickRandomMove() {
-      const emptyIndexes = cells.map((val, i) => val === '' ? i : null).filter(i => i !== null);
-      return emptyIndexes[Math.floor(Math.random() * emptyIndexes.length)];
-    }
-
-    function checkWinner(player) {
-      const winPatterns = [
-        [0,1,2],[3,4,5],[6,7,8],
-        [0,3,6],[1,4,7],[2,5,8],
-        [0,4,8],[2,4,6]
-      ];
-      return winPatterns.some(pattern => pattern.every(i => cells[i] === player));
-    }
-
-    function endGame(winner) {
-      winSound.play();
-      gameActive = false;
-      score[winner]++;
-      updateScore();
-      let message = winner === 'X' ? playerXName : playerOName;
-      if (gameMode === 'robot' && winner === 'X') {
-        const premio = premiacoes[Math.floor(Math.random() * premiacoes.length)];
-        updateStatus(`🏆 ${message} venceu!\n🎁 ${premio}`);
-      } else {
-        updateStatus(`🏆 ${message} venceu!`);
-      }
-    }
-
-    function updateStatus(msg) {
-      statusDiv.innerHTML = msg.replace(/\n/g, "<br>");
-    }
-
-    function updateScore() {
-      scoreX.textContent = `X: ${score.X}`;
-      scoreO.textContent = `O: ${score.O}`;
-    }
-
-    function resetGame() {
-      startGame();
-    }
-  </script>
-
+    <div class="container">
+        <h1>Jogo da Velha</h1>
+        <div class="modes">
+            <button id="two-players-btn" class="mode-btn">2 Jogadores</button>
+            <button id="vs-robot-btn" class="mode-btn">Contra o Robô</button>
+        </div>
+        <div id="board" class="board">
+            <div class="cell" data-cell-index="0"></div>
+            <div class="cell" data-cell-index="1"></div>
+            <div class="cell" data-cell-index="2"></div>
+            <div class="cell" data-cell-index="3"></div>
+            <div class="cell" data-cell-index="4"></div>
+            <div class="cell" data-cell-index="5"></div>
+            <div class="cell" data-cell-index="6"></div>
+            <div class="cell" data-cell-index="7"></div>
+            <div class="cell" data-cell-index="8"></div>
+        </div>
+        <div id="status" class="status">Vez do jogador X</div>
+        <button id="restart-btn" class="restart-btn">Reiniciar Jogo</button>
+    </div>
+    <script src="script.js"></script>
 </body>
 </html>
