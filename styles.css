@@ -4,17 +4,17 @@ body {
     justify-content: center;
     align-items: center;
     height: 100vh;
-    background-color: #f0f8ff;
-    color: #333;
+    background-color: #b30b83;
+    color: #333333;
     margin: 0;
 }
 
 .container {
     text-align: center;
-    background-color: #fff;
+    background-color: #ffffff;
     padding: 2em;
     border-radius: 10px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 8px rgba(233, 3, 129, 0.056);
 }
 
 h1 {
