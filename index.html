@@ -3,30 +3,105 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Jogo da Velha Colorido</title>
-    <link rel="stylesheet" href="styles.css">
+    <title>Jogo da Velha</title>
+    <style>
+        /* Adicione seu CSS aqui para estilizar o tabuleiro e os botões */
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            background-color: #f0f0f0;
+        }
+
+        h1 {
+            color: #333;
+        }
+
+        .board {
+            display: grid;
+            grid-template-columns: repeat(3, 100px);
+            grid-gap: 5px;
+            margin-top: 20px;
+        }
+
+        .cell {
+            width: 100px;
+            height: 100px;
+            background-color: #fff;
+            border: 2px solid #333;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 4em;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .cell:hover {
+            background-color: #e9e9e9;
+        }
+
+        .cell.x {
+            color: #d9534f; /* Vermelho para X */
+        }
+
+        .cell.o {
+            color: #5bc0de; /* Azul para O */
+        }
+
+        #status {
+            margin-top: 20px;
+            font-size: 1.5em;
+            font-weight: bold;
+        }
+
+        .controls {
+            margin-top: 20px;
+            display: flex;
+            gap: 10px;
+        }
+
+        button {
+            padding: 10px 20px;
+            font-size: 1em;
+            cursor: pointer;
+            border: none;
+            border-radius: 5px;
+            background-color: #337ab7;
+            color: white;
+        }
+
+        button:hover {
+            opacity: 0.9;
+        }
+    </style>
 </head>
 <body>
-    <div class="container">
-        <h1>Jogo da Velha</h1>
-        <div class="modes">
-            <button id="two-players-btn" class="mode-btn">2 Jogadores</button>
-            <button id="vs-robot-btn" class="mode-btn">Contra o Robô</button>
-        </div>
-        <div id="board" class="board">
-            <div class="cell" data-cell-index="0"></div>
-            <div class="cell" data-cell-index="1"></div>
-            <div class="cell" data-cell-index="2"></div>
-            <div class="cell" data-cell-index="3"></div>
-            <div class="cell" data-cell-index="4"></div>
-            <div class="cell" data-cell-index="5"></div>
-            <div class="cell" data-cell-index="6"></div>
-            <div class="cell" data-cell-index="7"></div>
-            <div class="cell" data-cell-index="8"></div>
-        </div>
-        <div id="status" class="status">Vez do jogador X</div>
-        <button id="restart-btn" class="restart-btn">Reiniciar Jogo</button>
+    <h1>Jogo da Velha</h1>
+    <div class="board">
+        <div class="cell" data-cell-index="0"></div>
+        <div class="cell" data-cell-index="1"></div>
+        <div class="cell" data-cell-index="2"></div>
+        <div class="cell" data-cell-index="3"></div>
+        <div class="cell" data-cell-index="4"></div>
+        <div class="cell" data-cell-index="5"></div>
+        <div class="cell" data-cell-index="6"></div>
+        <div class="cell" data-cell-index="7"></div>
+        <div class="cell" data-cell-index="8"></div>
     </div>
-    <script src="script.js"></script>
+    <div id="status">Vez do jogador X</div>
+    <div class="controls">
+        <button id="two-players-btn">2 Jogadores</button>
+        <button id="vs-robot-btn">Contra o Robô</button>
+        <button id="restart-btn">Reiniciar Jogo</button>
+    </div>
+
+    <script>
+        // Cole o seu código JavaScript aqui
+        // ... (o código que você enviou) ...
+    </script>
 </body>
 </html>
